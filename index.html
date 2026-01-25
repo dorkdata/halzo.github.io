@@ -3,320 +3,459 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Halzo | The Photo Trading App</title>
+    <title>Halzo | Unlock Core Memories</title>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
     
+    <meta property="og:title" content="Halzo | Unlock Core Memories">
+    <meta property="og:description" content="Stop gatekeeping memories. Swap photos to unlock your camera roll.">
+    <meta property="og:image" content="https://halzo.com/logo.png">
+
     <style>
         :root {
-            --bg: #050505;
-            --surface: #111111;
-            --surface-highlight: #1a1a1a;
-            --text: #ffffff;
-            --text-muted: #888888;
-            --primary: #FF66C4; /* Updated to a cuter Pink */
-            --secondary: #66FFFF; /* Cyan */
-            --accent: #FFD600; /* Yellow */
-            --success: #00FF94;
+            --bg: #FDFBF7; /* Cream/Paper */
+            --text: #1a1a1a;
+            --primary: #FF4D00; /* International Orange */
+            --yellow: #FFD600; /* Sticker Yellow */
+            --purple: #C084FC;
+            --font-head: 'Syne', sans-serif;
+            --font-body: 'DM Sans', sans-serif;
+            --card-shadow: 6px 6px 0px #000000;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
+        
         body {
             background-color: var(--bg);
             color: var(--text);
-            font-family: 'Inter', sans-serif;
+            font-family: var(--font-body);
             overflow-x: hidden;
-            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
         }
 
-        h1, h2, h3, h4 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700;
-            letter-spacing: -0.02em;
+        /* --- FILM GRAIN OVERLAY --- */
+        .grain {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 9999; opacity: 0.3;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.5'/%3E%3C/svg%3E");
         }
 
-        .container { max-width: 800px; margin: 0 auto; padding: 0 24px; }
+        /* --- TYPOGRAPHY --- */
+        h1, h2, h3, h4 { font-family: var(--font-head); font-weight: 800; line-height: 0.95; }
+        p { line-height: 1.6; }
+
+        .hero-title {
+            font-size: clamp(3.5rem, 12vw, 8rem);
+            letter-spacing: -0.04em;
+            text-transform: uppercase;
+        }
+
+        .highlight {
+            position: relative; display: inline-block; color: var(--primary);
+        }
+        .highlight::after {
+            content: ''; position: absolute; bottom: -10px; left: 0; width: 100%; height: 12px;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='20' viewBox='0 0 100 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 10 Q 25 20 50 10 T 100 10' stroke='%23FF4D00' stroke-width='6' fill='none'/%3E%3C/svg%3E");
+            background-size: contain; background-repeat: repeat-x;
+        }
+
+        /* --- UTILS --- */
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 2; }
+        .section-padding { padding: 100px 0; }
         
-        .gradient-text {
-            background: linear-gradient(90deg, #fff, var(--text-muted));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .btn {
+            background: #000; color: #fff; padding: 18px 40px; border-radius: 60px;
+            font-weight: 700; font-size: 1.1rem; text-decoration: none; display: inline-block;
+            transition: transform 0.2s; border: 2px solid #000; cursor: pointer;
         }
+        .btn:hover { background: #fff; color: #000; transform: scale(1.05) rotate(-2deg); box-shadow: 4px 4px 0 var(--primary); }
 
-        .highlight-text { color: var(--primary); }
-
-        /* --- HEADER --- */
-        header {
-            padding: 24px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background: rgba(5,5,5,0.8);
-            backdrop-filter: blur(10px);
-        }
-
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .logo-img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            /* Placeholder background if image is missing */
-            background: linear-gradient(45deg, var(--primary), var(--secondary)); 
-        }
-
-        .logo-text { font-size: 1.5rem; font-weight: 700; color: white; letter-spacing: -0.03em; }
-
-        .btn-login {
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.9rem;
-            padding: 8px 16px;
-            border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.2);
-            transition: all 0.2s;
-        }
-        .btn-login:hover { background: rgba(255,255,255,0.1); border-color: white; }
+        /* --- NAV --- */
+        nav { padding: 30px 0; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-family: var(--font-head); font-weight: 800; font-size: 2rem; letter-spacing: -0.05em; }
 
         /* --- HERO --- */
-        .hero { padding: 60px 0 40px; text-align: center; }
-        .hero h1 { font-size: clamp(2.5rem, 8vw, 4.5rem); line-height: 1.1; margin-bottom: 24px; }
-        .hero p { font-size: 1.2rem; color: var(--text-muted); max-width: 500px; margin: 0 auto 40px; }
+        .hero { padding: 60px 0 140px; text-align: center; position: relative; }
         
-        .hero-badges { display: flex; gap: 10px; justify-content: center; margin-bottom: 40px; flex-wrap: wrap;}
-        .badge {
-            background: rgba(255,255,255,0.1);
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            border: 1px solid rgba(255,255,255,0.1);
+        .floater {
+            position: absolute; z-index: 1;
+            box-shadow: var(--card-shadow); border: 3px solid #000; background: #fff;
+            padding: 10px 10px 40px 10px; width: 180px; transition: transform 0.3s;
         }
-
-        /* --- DEMO PHONE --- */
-        .phone-container {
-            position: relative;
-            width: 280px;
-            height: 550px;
-            background: var(--surface);
-            border-radius: 40px;
-            border: 8px solid #2a2a2a;
-            margin: 0 auto 80px;
-            box-shadow: 0 0 80px -20px rgba(255, 102, 196, 0.3);
-            overflow: hidden;
-        }
+        .floater img { width: 100%; height: auto; filter: grayscale(20%); }
+        .floater:hover { transform: scale(1.1) rotate(0deg) !important; z-index: 10; }
         
-        .notch {
-            position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-            width: 120px; height: 25px; background: #2a2a2a;
-            border-bottom-left-radius: 18px; border-bottom-right-radius: 18px; z-index: 10;
-        }
+        .p1 { top: 10%; left: 5%; transform: rotate(-12deg); }
+        .p2 { top: 20%; right: 5%; transform: rotate(8deg); }
+        .p3 { bottom: 10%; left: 15%; transform: rotate(5deg); width: 140px; }
+        .p4 { bottom: 20%; right: 15%; transform: rotate(-8deg); width: 150px; }
 
-        .app-ui { padding: 40px 15px 20px; height: 100%; display: flex; flex-direction: column; }
+        .sticker {
+            position: absolute; z-index: 5;
+            background: var(--yellow); color: black; padding: 10px; font-weight: 800; 
+            font-family: var(--font-head); border-radius: 50%; width: 120px; height: 120px;
+            display: flex; align-items: center; justify-content: center; text-align: center;
+            border: 3px solid black; box-shadow: 4px 4px 0 black;
+            transform: rotate(15deg); font-size: 0.9rem; line-height: 1.1;
+        }
+        .s1 { top: 55%; right: 18%; animation: float 4s infinite ease-in-out; }
+        @keyframes float { 0%, 100% { transform: translateY(0) rotate(15deg); } 50% { transform: translateY(-15px) rotate(15deg); } }
+
+        /* --- TAPE --- */
+        .tape-wrapper {
+            background: black; color: white; padding: 15px 0;
+            transform: rotate(-2deg) scale(1.05); width: 105vw; margin-left: -2vw;
+            overflow: hidden; border-top: 4px solid var(--primary); border-bottom: 4px solid var(--primary);
+            position: relative; z-index: 10;
+        }
+        .tape-text {
+            white-space: nowrap; font-family: var(--font-head); font-size: 1.2rem; font-weight: 800;
+            animation: scroll 20s linear infinite; text-transform: uppercase;
+        }
+        .tape-text span { margin: 0 30px; color: var(--yellow); }
+        @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* --- THE PROBLEM (GRAVEYARD) --- */
+        .graveyard-section {
+            background: #111; color: #fff; padding: 120px 0; text-align: center;
+            clip-path: polygon(0 0, 100% 5%, 100% 100%, 0 95%); margin-top: -40px;
+            padding-bottom: 150px;
+        }
+        .graveyard-text {
+            font-size: clamp(2rem, 5vw, 4rem); max-width: 900px; margin: 0 auto;
+        }
+        .graveyard-text span { color: #555; }
+        .graveyard-text span.active { color: #fff; transition: color 0.5s; }
+
+        /* --- HOW IT WORKS (POLAROIDS) --- */
+        .dump-section { padding: 120px 0; position: relative; margin-top: -50px; }
+        .grid-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; margin-top: 60px;}
         
-        .ui-header { display: flex; justify-content: space-between; margin-bottom: 15px; align-items: center; }
-        .coin-pill { 
-            background: #333; padding: 4px 12px; border-radius: 20px; 
-            font-size: 0.75rem; font-weight: bold; display: flex; align-items: center; gap: 5px; 
+        .polaroid {
+            background: #fff; border: 3px solid #000; padding: 15px 15px 50px 15px;
+            box-shadow: var(--card-shadow); transition: transform 0.2s; position: relative;
         }
-        
-        .card-zone { flex-grow: 1; position: relative; margin-bottom: 20px; }
+        .polaroid:nth-child(1) { transform: rotate(-2deg); }
+        .polaroid:nth-child(2) { transform: rotate(1deg); margin-top: 40px; }
+        .polaroid:nth-child(3) { transform: rotate(-1deg); }
+        .polaroid:hover { transform: scale(1.02) rotate(0) !important; z-index: 5; }
 
-        .ui-card {
-            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background: #222; border-radius: 20px;
-            background-size: cover; background-position: center;
-            display: flex; flex-direction: column; justify-content: flex-end; padding: 15px;
-            border: 1px solid rgba(255,255,255,0.1);
-            transition: transform 0.4s ease;
-        }
+        .polaroid img { width: 100%; height: 250px; object-fit: cover; border: 2px solid #000; filter: grayscale(100%); transition: filter 0.3s; }
+        .polaroid:hover img { filter: grayscale(0%); }
 
-        .ui-card.front {
-            background-image: url('https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80');
-            z-index: 3;
-            transform: rotate(-2deg);
-            animation: float 4s ease-in-out infinite;
+        .pin {
+            width: 20px; height: 20px; border-radius: 50%; border: 2px solid black;
+            position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+            box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
         }
 
-        .ui-card.back {
-            background-image: url('https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80');
-            z-index: 2;
-            transform: scale(0.95) rotate(3deg);
-            opacity: 0.6;
+        /* --- THE VETO FEATURE (SPLIT) --- */
+        .veto-section { border-top: 3px solid #000; border-bottom: 3px solid #000; background: var(--yellow); overflow: hidden; }
+        .veto-grid { display: grid; grid-template-columns: 1fr 1fr; }
+        .veto-content { padding: 80px 40px; display: flex; flex-direction: column; justify-content: center; }
+        .veto-visual { 
+            background: url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&q=80'); 
+            background-size: cover; background-position: center; border-left: 3px solid black; position: relative;
         }
-
-        @keyframes float {
-            0%, 100% { transform: rotate(-2deg) translateY(0); }
-            50% { transform: rotate(-2deg) translateY(-8px); }
-        }
-
-        .ui-controls { display: flex; justify-content: space-around; }
-        .circle-btn {
-            width: 50px; height: 50px; border-radius: 50%;
+        .blur-overlay {
+            position: absolute; inset: 0; backdrop-filter: blur(20px); 
             display: flex; align-items: center; justify-content: center;
-            font-size: 1.2rem; cursor: pointer; border: none;
+            transition: opacity 0.5s;
         }
-        .btn-pass { background: #222; color: #ff4444; border: 1px solid #333; }
-        .btn-like { background: var(--primary); color: white; box-shadow: 0 5px 15px rgba(255, 0, 84, 0.4); }
-
-        /* --- HOW IT WORKS GRID --- */
-        .grid-section { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 80px; }
+        .veto-visual:hover .blur-overlay { opacity: 0; }
         
-        .grid-card {
-            background: var(--surface);
-            padding: 30px;
-            border-radius: 24px;
-            border: 1px solid #222;
+        .stamp {
+            border: 4px solid red; color: red; font-family: var(--font-head); font-weight: 800;
+            padding: 10px 30px; font-size: 2rem; transform: rotate(-15deg); text-transform: uppercase;
+            background: rgba(255, 255, 255, 0.8);
         }
 
-        .grid-card h3 { margin: 15px 0 10px; font-size: 1.2rem; }
-        .grid-card p { font-size: 0.95rem; color: var(--text-muted); }
-        .step-icon { font-size: 2.5rem; display: block; }
+        /* --- GAMIFICATION --- */
+        .keys-section { text-align: center; padding: 100px 0; background: #fff; }
+        .key-row {
+            display: flex; justify-content: center; gap: 20px; margin-top: 40px; flex-wrap: wrap;
+        }
+        .key-card {
+            border: 2px solid #000; padding: 30px; border-radius: 20px; width: 250px;
+            box-shadow: 4px 4px 0 #000; text-align: left;
+        }
+        .key-icon { font-size: 2.5rem; margin-bottom: 10px; display: block; }
 
-        /* --- PRIVACY --- */
-        .privacy-box {
-            background: linear-gradient(180deg, #0d1f14 0%, #000 100%);
-            border: 1px solid #1a3324;
-            border-radius: 24px;
-            padding: 40px;
-            text-align: center;
-            margin-bottom: 80px;
+        /* --- SOCIAL HYPE --- */
+        .hype-section { padding: 100px 0; background: var(--bg); position: relative; overflow: hidden; }
+        .chat-bubble {
+            background: #fff; border: 2px solid #000; padding: 15px 25px; border-radius: 30px;
+            max-width: 300px; position: absolute; box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
+            font-size: 0.9rem;
         }
-        .privacy-box h2 { color: var(--success); margin-bottom: 15px; }
+        .c1 { top: 10%; left: 10%; transform: rotate(-5deg); }
+        .c2 { top: 20%; right: 10%; transform: rotate(5deg); background: var(--primary); color: white; }
+        .c3 { bottom: 15%; left: 20%; transform: rotate(2deg); }
+        .c4 { bottom: 30%; right: 15%; transform: rotate(-3deg); background: var(--yellow); }
 
-        /* --- WAITLIST --- */
-        .waitlist-section { text-align: center; padding-bottom: 100px; }
-        .input-wrapper {
-            position: relative; max-width: 400px; margin: 30px auto 0;
+        /* --- FAQ --- */
+        .faq-section { max-width: 800px; margin: 0 auto; padding-bottom: 100px; }
+        .accordion { border: 2px solid #000; margin-bottom: 15px; border-radius: 15px; overflow: hidden; box-shadow: 4px 4px 0 #000; background: white; }
+        .acc-header {
+            padding: 20px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between;
+            background: #fff; transition: background 0.2s;
         }
-        .email-input {
-            width: 100%; padding: 20px; padding-right: 110px;
-            border-radius: 50px; border: 2px solid #333;
-            background: var(--surface); color: white;
-            font-size: 1rem; font-family: 'Inter', sans-serif;
-            outline: none; transition: border-color 0.3s;
+        .acc-header:hover { background: #f0f0f0; }
+        .acc-body {
+            max-height: 0; overflow: hidden; transition: max-height 0.3s; padding: 0 20px;
+            border-top: 1px solid transparent; color: #555;
         }
-        .email-input:focus { border-color: var(--primary); }
-        
-        .submit-btn {
-            position: absolute; right: 5px; top: 5px; bottom: 5px;
-            background: var(--primary); color: white; border: none;
-            border-radius: 40px; padding: 0 25px; font-weight: 700;
-            cursor: pointer; transition: transform 0.2s;
-        }
-        .submit-btn:hover { transform: scale(1.05); }
+        .accordion.active .acc-body { max-height: 200px; padding: 20px; border-top: 2px solid #000; }
 
-        /* Mobile Adjustments */
-        @media (max-width: 600px) {
-            .grid-section { grid-template-columns: 1fr; }
+        /* --- JOIN --- */
+        .join-section { text-align: center; padding: 120px 0; border-top: 3px solid black; background: white; }
+        .input-box {
+            border: 3px solid #000; padding: 8px; border-radius: 60px;
+            display: inline-flex; background: white; box-shadow: var(--card-shadow);
+            max-width: 500px; width: 100%; margin-top: 30px;
+        }
+        .input-box input {
+            border: none; background: transparent; outline: none;
+            flex-grow: 1; padding: 15px 20px; font-size: 1.1rem; font-family: var(--font-body);
+        }
+        .input-box button {
+            background: var(--primary); color: white; border: 2px solid #000;
+            padding: 15px 40px; border-radius: 50px; font-weight: 700; cursor: pointer;
+            font-size: 1rem; transition: background 0.2s;
+        }
+        .input-box button:hover { background: #000; }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .hero-title { font-size: 3.5rem; }
+            .floater { display: none; }
+            .veto-grid { grid-template-columns: 1fr; }
+            .veto-visual { height: 300px; border-left: none; border-top: 3px solid black; }
+            .chat-bubble { position: relative; margin: 20px auto; transform: rotate(0) !important; top: auto; left: auto; right: auto; bottom: auto; }
+            .graveyard-section { clip-path: none; padding: 80px 20px; }
         }
     </style>
 </head>
 <body>
 
+    <div class="grain"></div>
+
     <div class="container">
-        <header>
-            <div class="logo-container">
-                <img src="logo.png" alt="Halzo Logo" class="logo-img"> 
-                <div class="logo-text">halzo</div>
-            </div>
-            <a href="#" class="btn-login">Log In</a>
-        </header>
+        <nav>
+            <div class="logo">halzo.</div>
+            <a href="#join" style="text-decoration:none; color:black; font-weight:700; border-bottom:2px solid black;">Login</a>
+        </nav>
 
         <section class="hero">
-            <div class="hero-badges">
-                <span class="badge">✨ Beta Access</span>
-                <span class="badge">📸 iOS & Android</span>
-            </div>
-            <h1>Unlock the <br><span class="highlight-text">Vault.</span></h1>
-            <p>Your friends have 100s of photos of you hidden in their camera roll. Swap to set them free.</p>
-        </section>
+            <div class="floater p1"><img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&q=80"></div>
+            <div class="floater p2"><img src="https://images.unsplash.com/photo-1532635241-17e820acc59f?w=300&q=80"></div>
+            <div class="floater p3"><img src="https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?w=300&q=80"></div>
+            <div class="sticker s1">CORE MEMORY UNLOCKED</div>
 
-        <div class="phone-container">
-            <div class="notch"></div>
-            <div class="app-ui">
-                <div class="ui-header">
-                    <span style="font-weight:700; font-size:0.9rem;">🔥 Your Finds</span>
-                    <div class="coin-pill">🔑 4 Keys</div>
-                </div>
-
-                <div class="card-zone">
-                    <div class="ui-card back"></div>
-                    <div class="ui-card front">
-                        <div style="margin-top: auto;">
-                            <span class="badge" style="background:rgba(0,0,0,0.6); backdrop-filter:blur(4px);">📸 Found 3h ago</span>
-                            <h3 style="margin-top:5px; text-shadow:0 2px 4px rgba(0,0,0,0.5);">@sarah_j</h3>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="ui-controls">
-                    <button class="circle-btn btn-pass">✕</button>
-                    <button class="circle-btn btn-like">➜</button>
-                </div>
-                <p style="text-align:center; font-size:0.75rem; color:#666; margin-top:15px;">Swipe right to send & earn keys</p>
-            </div>
-        </div>
-
-        <h2 style="text-align:center; margin-bottom:40px;">The Rules of the Game</h2>
-        <section class="grid-section">
-            <div class="grid-card">
-                <span class="step-icon">🕵️‍♀️</span>
-                <h3>1. The Scan</h3>
-                <p>Halzo finds photos of your friends in your camera roll. (Don't worry, it stays on your phone).</p>
-            </div>
-            <div class="grid-card">
-                <span class="step-icon">💸</span>
-                <h3>2. The Trade</h3>
-                <p>You can't just take. You have to give. Swipe right to send photos to friends and earn Keys.</p>
-            </div>
-            <div class="grid-card">
-                <span class="step-icon">🔓</span>
-                <h3>3. The Unlock</h3>
-                <p>Use your earned Keys to unlock the candid photos your friends found of YOU.</p>
-            </div>
-            <div class="grid-card">
-                <span class="step-icon">🔥</span>
-                <h3>4. The Veto</h3>
-                <p>Bad angle? Veto it before they see it. Only good photos survive.</p>
-            </div>
-        </section>
-
-        <section class="privacy-box">
-            <h2>🔒 No Creepy Stuff</h2>
-            <p style="color:#aaa; max-width:500px; margin:0 auto;">
-                Halzo uses <strong>Zero-Knowledge</strong> technology. Face scanning happens locally on your device. We never see your camera roll, and we never upload your photos to the cloud unless you explicitly swipe to share one.
-            </p>
-        </section>
-
-        <section class="waitlist-section">
-            <h2>Claim your handle</h2>
-            <p style="color:#666; margin-top:10px;">We're dropping in batches. Don't be late.</p>
+            <h1 class="hero-title">
+                Stop <br>
+                <span class="highlight">Gatekeeping</span><br>
+                Memories
+            </h1>
             
-            <form onsubmit="event.preventDefault(); document.getElementById('success').style.display='block';">
-                <div class="input-wrapper">
-                    <input type="email" class="email-input" placeholder="tiktok_fan_22@gmail.com" required>
-                    <button type="submit" class="submit-btn">Join</button>
-                </div>
-            </form>
-            <p id="success" style="color:var(--success); margin-top:15px; display:none; font-weight:600;">🚀 You're on the list!</p>
-        </section>
+            <p style="font-size: 1.3rem; max-width: 500px; margin: 30px auto; line-height: 1.6;">
+                Your friends are hoarding the best photos of you. <br>
+                <strong>Swap to set them free.</strong>
+            </p>
 
-        <footer style="text-align:center; padding-bottom:40px; color:#444; font-size:0.8rem;">
-            &copy; 2026 Halzo Inc.
-        </footer>
+            <a href="#join" class="btn">Claim Your Handle ➔</a>
+        </section>
     </div>
 
+    <div class="tape-wrapper">
+        <div class="tape-text">
+            NO MORE SCREENSHOTS <span>✦</span> THE ECONOMY OF VANITY <span>✦</span> UNLOCK THE VAULT <span>✦</span> 100% PRIVATE <span>✦</span> SEND TO RECEIVE <span>✦</span>
+            NO MORE SCREENSHOTS <span>✦</span> THE ECONOMY OF VANITY <span>✦</span> UNLOCK THE VAULT <span>✦</span> 100% PRIVATE <span>✦</span> SEND TO RECEIVE <span>✦</span>
+        </div>
+    </div>
+
+    <section class="graveyard-section">
+        <div class="container">
+            <h2 class="graveyard-text">
+                <span>You have 14,302 photos.</span><br>
+                <span>90% of them will never be seen again.</span><br>
+                <span style="color: white;">That ends today.</span>
+            </h2>
+        </div>
+    </section>
+
+    <section class="dump-section">
+        <div class="container">
+            <div style="text-align: center; margin-bottom: 60px;">
+                <span style="background: black; color: white; padding: 5px 15px; border-radius: 20px; font-weight: 700; font-size: 0.8rem;">THE PROCESS</span>
+                <h2 style="font-size: 3rem; margin-top: 10px;">How the sausage is made</h2>
+            </div>
+            
+            <div class="grid-cards">
+                <div class="polaroid">
+                    <div class="pin" style="background: #333;"></div>
+                    <img src="https://images.unsplash.com/photo-1543807535-eceef0bc6599?w=400&q=80">
+                    <h3>1. The Scan</h3>
+                    <p>We find the faces in your messy camera roll. It stays on your phone. No cloud creeps.</p>
+                </div>
+                <div class="polaroid">
+                    <div class="pin" style="background:var(--yellow);"></div>
+                    <img src="https://images.unsplash.com/photo-1511988617509-a57c8a288659?w=400&q=80">
+                    <h3>2. The Swap</h3>
+                    <p>Want that pic Sarah took? Send her a photo of herself to unlock the photo of you.</p>
+                </div>
+                <div class="polaroid">
+                    <div class="pin" style="background:var(--primary);"></div>
+                    <img src="https://images.unsplash.com/photo-1492633423870-43d1cd2775eb?w=400&q=80">
+                    <h3>3. The Reveal</h3>
+                    <p>Collect Karma Keys. Reveal your best angles. Veto the bad ones.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="veto-section">
+        <div class="veto-grid">
+            <div class="veto-content">
+                <h2 style="font-size: 3.5rem;">The Veto.</h2>
+                <h3 style="font-family: var(--font-body); font-weight: 500; font-size: 1.5rem; margin-top: 10px;">Because nobody wants to see that double chin.</h3>
+                <p style="margin-top: 20px; font-size: 1.1rem; max-width: 400px;">
+                    Before a friend gets your photo, you can blur it or burn it. You control what enters the ecosystem.
+                </p>
+            </div>
+            <div class="veto-visual">
+                <div class="blur-overlay">
+                    <div class="stamp">CENSORED</div>
+                </div>
+                <div style="position: absolute; bottom: 20px; left: 20px; background: white; padding: 10px; font-weight: bold; border: 2px solid black; transform: rotate(2deg);">HOVER TO REVEAL</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="hype-section">
+        <div class="container" style="text-align: center;">
+            <h2 style="font-size: 3rem; margin-bottom: 50px;">The Group Chat is leaking.</h2>
+            <div style="height: 400px; position: relative;">
+                <div class="chat-bubble c1">
+                    <strong>@sarah_j</strong><br>
+                    OMG I finally got that pic from Dave's wedding. I looked so good?? Why did he hide this??
+                </div>
+                <div class="chat-bubble c2">
+                    <strong>@mike_t</strong><br>
+                    I just traded 5 pics of Alex for 1 pic of me. Worth it.
+                </div>
+                <div class="chat-bubble c3">
+                    <strong>@jenna</strong><br>
+                    Halzo found photos from 2019 I completely forgot existed. Core memory unlocked fr.
+                </div>
+                <div class="chat-bubble c4">
+                    <strong>@halzo_bot</strong><br>
+                    You earned +3 Karma Keys! 🔑
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="keys-section">
+        <div class="container">
+            <h2 style="font-size: 3rem;">Secure the Bag (Keys)</h2>
+            <p>The economy of vanity is simple.</p>
+            
+            <div class="key-row">
+                <div class="key-card">
+                    <span class="key-icon">📤</span>
+                    <h4>Send a Photo</h4>
+                    <p style="color: var(--primary); font-weight: 700;">+1 Key</p>
+                    <p style="font-size: 0.9rem; margin-top: 5px;">Share a photo of a friend to earn.</p>
+                </div>
+                <div class="key-card">
+                    <span class="key-icon">🔓</span>
+                    <h4>Unlock a Photo</h4>
+                    <p style="color: #888; font-weight: 700;">-1 Key</p>
+                    <p style="font-size: 0.9rem; margin-top: 5px;">Spend keys to see photos of you.</p>
+                </div>
+                <div class="key-card">
+                    <span class="key-icon">🚀</span>
+                    <h4>Invite Squad</h4>
+                    <p style="color: var(--primary); font-weight: 700;">+3 Keys</p>
+                    <p style="font-size: 0.9rem; margin-top: 5px;">Get the whole group chat on board.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-padding faq-section">
+        <div class="container">
+            <h2 style="font-size: 2.5rem; text-align: center; margin-bottom: 40px;">Receipts (FAQ)</h2>
+            
+            <div class="accordion" onclick="toggleAcc(this)">
+                <div class="acc-header">Does this upload my nudes? <span>+</span></div>
+                <div class="acc-body">No. Halzo scans locally on your device. We don't see your camera roll. Photos are only uploaded when you specifically choose to send them to a friend.</div>
+            </div>
+
+            <div class="accordion" onclick="toggleAcc(this)">
+                <div class="acc-header">Is it free? <span>+</span></div>
+                <div class="acc-body">Yes, if you participate. It's a barter economy. If you share photos, you earn keys to unlock photos. If you hoard photos, you get nothing.</div>
+            </div>
+
+            <div class="accordion" onclick="toggleAcc(this)">
+                <div class="acc-header">What if I don't have photos of anyone? <span>+</span></div>
+                <div class="acc-body">You probably do. Our AI finds faces in the background of shots you took 3 years ago. You'd be surprised.</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="join-section" id="join">
+        <div class="container">
+            <div class="sticker" style="position: absolute; top: -60px; right: 20%; transform: rotate(10deg); width: 100px; height: 100px; background: var(--primary); color: white; border-color: white;">LAST CALL</div>
+            <h2 style="font-size: 4rem;">Don't be a hoarder.</h2>
+            <p style="font-size: 1.3rem; margin-top: 10px; max-width: 600px; margin-left: auto; margin-right: auto;">
+                The beta is currently full, but we are dropping 500 new invites this Friday. Get on the list.
+            </p>
+            
+            <div class="input-box">
+                <input type="email" placeholder="yourname@gmail.com" id="emailInput">
+                <button onclick="handleSubmit()">Join List</button>
+            </div>
+            <p id="successMsg" style="display:none; color: var(--primary); font-weight: 700; margin-top: 20px; font-size: 1.2rem;">🎉 You're on the list! Watch your inbox.</p>
+        </div>
+    </div>
+
+    <footer style="text-align: center; padding: 60px 20px; background: #111; color: white;">
+        <h3 style="font-size: 2rem;">halzo.</h3>
+        <p style="color: #666; margin-top: 10px; font-size: 0.9rem;">&copy; 2026. Valencia, Spain.</p>
+        <div style="margin-top: 20px;">
+            <a href="#" style="color: white; margin: 0 10px; text-decoration: none;">TikTok</a>
+            <a href="#" style="color: white; margin: 0 10px; text-decoration: none;">Instagram</a>
+        </div>
+    </footer>
+
+    <script>
+        function handleSubmit() {
+            const btn = document.querySelector('.input-box button');
+            const msg = document.getElementById('successMsg');
+            const input = document.getElementById('emailInput');
+            
+            if(input.value.includes('@')) {
+                btn.innerText = "...";
+                setTimeout(() => {
+                    btn.innerText = "Joined";
+                    btn.style.background = "black";
+                    input.value = "";
+                    msg.style.display = "block";
+                }, 800);
+            } else {
+                alert("Give us a real email, bestie.");
+            }
+        }
+
+        function toggleAcc(el) {
+            el.classList.toggle('active');
+            let span = el.querySelector('span');
+            span.innerText = el.classList.contains('active') ? '-' : '+';
+        }
+    </script>
 </body>
 </html>
