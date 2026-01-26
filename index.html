@@ -51,11 +51,14 @@
         strong { font-weight: 700; color: black; }
 
         .hero-title {
-            font-size: clamp(3rem, 12vw, 7rem);
+            /* Adjusted for better mobile fit */
+            font-size: clamp(2.5rem, 11vw, 7rem); 
+            line-height: 1.1;
             margin-bottom: 20px;
             color: var(--text);
             position: relative;
             z-index: 5;
+            word-wrap: break-word;
         }
 
         .highlight {
@@ -143,7 +146,7 @@
             font-family: var(--font-head); font-size: 1.5rem; border: 2px solid black; border-radius: 50%;
         }
 
-        /* --- TOOLKIT GRID (NEW) --- */
+        /* --- TOOLKIT GRID --- */
         .toolkit-section { padding: 100px 0; background: #fff; }
         .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-top: 50px; }
         .feature-box {
@@ -170,16 +173,27 @@
         }
         .app-top { padding: 20px; border-bottom: 2px solid #eee; display: flex; justify-content: space-between; font-weight: 700; font-size: 0.8rem; }
         .stack { flex-grow: 1; position: relative; padding: 20px; }
+        
         .swipe-card {
             position: absolute; top: 20px; left: 20px; right: 20px; bottom: 20px;
             background: #000; border-radius: 20px; border: 2px solid black;
             background-size: cover; background-position: center;
-            display: flex; flex-direction: column; justify-content: flex-end; padding: 20px;
+            display: flex; flex-direction: column; justify-content: flex-end; 
+            padding: 15px; /* Reduced padding for alignment */
         }
+        
         .sc-1 { background-image: url('https://images.unsplash.com/photo-1763951778440-13af353b122a?w=600&q=80'); z-index: 2; transform: rotate(-2deg); }
+        
         .sc-badge {
             background: rgba(255, 255, 255, 0.9); color: black; padding: 5px 10px; border-radius: 8px; 
             font-weight: bold; border: 2px solid black; display: inline-block; width: fit-content; font-size: 0.8rem;
+        }
+
+        .card-title {
+            color: white; font-size: 1.8rem; margin-top: 8px; 
+            text-align: left; /* Fixed Alignment */
+            width: 100%;
+            line-height: 1.1;
         }
         
         .swipe-actions { display: flex; justify-content: center; gap: 20px; padding: 30px; }
@@ -205,7 +219,10 @@
 
         /* MOBILE OPTIMIZATION */
         @media (max-width: 800px) {
-            .hero-title { font-size: 13vw; line-height: 0.9; }
+            .hero-title { 
+                font-size: 12vw; /* Tweaked for "Treasure Trove" fit */
+                line-height: 1.1; 
+            }
             
             /* Move sticker out of the way on mobile */
             .sticker { 
@@ -223,7 +240,6 @@
             .input-wrapper input { background: white; border: 3px solid black; border-radius: 10px; margin-bottom: 10px; box-shadow: 4px 4px 0 rgba(0,0,0,0.1); }
             .input-wrapper button { border-radius: 10px; box-shadow: 4px 4px 0 rgba(0,0,0,0.2); }
             
-            /* Diagram specific for mobile */
             .tech-grid { grid-template-columns: 1fr !important; }
         }
 
@@ -305,7 +321,7 @@
                     <div class="stack">
                         <div class="swipe-card sc-1">
                             <span class="sc-badge">📸 TAKEN: 3 YEARS AGO</span>
-                            <h3 style="color: white; font-size: 2rem; margin-top: 5px;">College Days</h3>
+                            <h3 class="card-title">College Days</h3>
                         </div>
                     </div>
                     <div class="swipe-actions">
